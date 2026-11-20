@@ -7,3 +7,4 @@ mlruns/
 *.log
 models/*.joblib
 predictions/*.csv
+data/*.csv
