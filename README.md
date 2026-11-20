@@ -1,33 +1,53 @@
-# SCSE3040 MLOps Mini Project — MP089 Bakery Bread Sales
+# SCSE3040 MLOps Mini Project
 
-Predict daily `loaves_sold` for Nagpur bakery outlets. This is a regression task evaluated using MAE.
+## Group Information
 
-> Read `STUDENT_HANDBOOK.md` (not yet supplied) before finalizing layout, seven data-problem checks, and submission details. This scaffold is based on the supplied problem statement only. Do not fabricate findings or scores.
+- **Group:** G186
+- **Problem ID:** MP089
+- **Problem:** Bakery Bread Sales (Nagpur)
+- **Course:** SCSE3040 MLOps
 
-## Data
-Place the supplied files in `data/`:
+## Group Members
+
+| Name | Enrolment Number |
+|---|---|
+| Samarth | S24CSEU2311 |
+| Bhumika Sharma | S24CSEU2310 |
+| Anany | S24CSEU2309 |
+
+## Project Overview
+
+This project focuses on developing an end-to-end MLOps pipeline for predicting daily bakery bread sales in Nagpur. The pipeline includes data auditing and cleaning, data version control, model training and experiment tracking, model deployment through an API, testing, containerization, monitoring, and model retraining.
+
+## Objective
+
+To predict the number of bread loaves sold daily (`loaves_sold`) using the available business and environmental features, while building a reproducible and deployable MLOps pipeline.
+
+## Dataset
+
+The project uses the dataset provided for problem MP089:
+
 - `train.csv`
 - `later.csv`
 - `holdout_features.csv`
 
-Keep originals unchanged. Use Python for inspection; do not open/save the original CSVs in Excel.
+## Project Pipeline
 
-## Setup
-```bash
-python -m venv .venv
-# Windows: .venv\\Scripts\\activate
-# macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-```
+- Data auditing and preprocessing
+- Data version control using DVC
+- Model training and experiment tracking using MLflow
+- Model evaluation using MAE
+- Prediction service using FastAPI
+- Automated testing using pytest
+- Containerization using Docker
+- Deployment configuration using Kubernetes
+- Data drift monitoring and model retraining
 
-## Current scaffold
-- `src/audit_data.py`: non-destructive data audit (run after data is placed)
-- `src/train.py`: training/MLflow scaffold
-- `src/monitor.py`: PSI and later-period evaluation scaffold
-- `src/predict.py`: holdout prediction scaffold
-- `src/api.py`: FastAPI API scaffold
-- `tests/`: tests
-- `k8s/`: Kubernetes deployment and service templates
+## Repository Structure
 
-## Important
-The API accepts exactly eight features: `price_rs`, `temp_c`, `footfall_index`, `competitor_shops`, `shelf_hours`, `orders_previous_day`, `day_type`, `outlet`. The schema rejects `orders_previous_day > 850` and `price_rs < 10`.
+The repository contains source code, data version-control files, model artifacts, tests, configuration files, deployment files, and prediction outputs as the project progresses.
+
+## Problem
+
+**MP089 – Bakery Bread Sales (Nagpur)**
+y_type`, `outlet`. The schema rejects `orders_previous_day > 850` and `price_rs < 10`.
