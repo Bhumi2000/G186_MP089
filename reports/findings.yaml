@@ -1,0 +1,53 @@
+group_id: G186
+problem_id: MP089
+data_issues:
+  leaking_column:
+    present: true
+    column: loaves_in_closing_register
+  unit_mixup:
+    present: true
+    column: shelf_hours
+    group_value: College Gate
+    factor: 60
+  sentinel_value:
+    present: false
+    column: null
+    value: null
+    count: null
+  duplicate_rows:
+    present: false
+    count: 0
+  stuck_sensor:
+    present: true
+    column: competitor_shops
+    start_date: '2026-03-27'
+    end_date: '2026-04-17'
+  target_typos:
+    present: true
+    count: 11
+  spelling_variants:
+    present: true
+    column: day_type
+    true_levels: 3
+tracking:
+  experiment_name: null
+  best_run_id: null
+  registered_model_name: null
+  champion_version: null
+monitoring:
+  psi:
+    price_rs: null
+    temp_c: null
+    footfall_index: null
+    competitor_shops: null
+    shelf_hours: null
+    orders_previous_day: null
+  most_drifted_feature: null
+  mae_by_group:
+    Station Road: null
+    Mall Road: null
+    College Gate: null
+  worst_served_group: null
+  mae_v1_on_check: null
+  mae_v2_on_check: null
+  decision: null
