@@ -9,3 +9,5 @@ pytest
 joblib
 PyYAML
 requests
+
+httpx2
