@@ -51,4 +51,6 @@ The repository contains source code, data version-control files, model artifacts
 ## Problem
 
 **MP089 – Bakery Bread Sales (Nagpur)**
-y_type`, `outlet`. The schema rejects `orders_previous_day > 850` and `price_rs < 10`.
+The service predicts daily loaves sold from price, weather, footfall, outlet,
+and previous-day order features. Requests reject `orders_previous_day > 850`
+and `price_rs < 10`.

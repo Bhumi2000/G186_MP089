@@ -8,6 +8,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "raw"
 OUTPUT = ROOT / "reports" / "findings.yaml"
+ROOT_OUTPUT = ROOT / "findings.yaml"
 
 
 def load_data():
@@ -258,20 +259,22 @@ def main():
         },
     }
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    with OUTPUT.open("w", encoding="utf-8") as file:
-        yaml.safe_dump(
-            report,
-            file,
-            sort_keys=False,
-            allow_unicode=True,
-        )
+    for output_path in (OUTPUT, ROOT_OUTPUT):
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_path.open("w", encoding="utf-8") as file:
+            yaml.safe_dump(
+                report,
+                file,
+                sort_keys=False,
+                allow_unicode=True,
+            )
 
     print("\nDATA ISSUE SUMMARY")
     for name, result in findings.items():
         print(f"{name}: {result['present']}")
 
     print(f"\nGenerated: {OUTPUT}")
+    print(f"Generated: {ROOT_OUTPUT}")
 
 
 if __name__ == "__main__":

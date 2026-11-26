@@ -18,16 +18,27 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from common import (
-    CATEGORICAL_FEATURES,
-    FEATURES,
-    NUMERIC_FEATURES,
-    TARGET,
-    clean_data,
-)
+try:
+    from .common import (
+        CATEGORICAL_FEATURES,
+        FEATURES,
+        NUMERIC_FEATURES,
+        PARAMS,
+        TARGET,
+        clean_data,
+    )
+except ImportError:  # Supports `python src/train.py` as well as `python -m src.train`.
+    from common import (
+        CATEGORICAL_FEATURES,
+        FEATURES,
+        NUMERIC_FEATURES,
+        PARAMS,
+        TARGET,
+        clean_data,
+    )
 
 ROOT = Path(__file__).resolve().parents[1]
-TRAIN_PATH = ROOT / "data" / "raw" / "train.csv"
+TRAIN_PATH = ROOT / PARAMS["data"]["train_path"]
 MODEL_DIR = ROOT / "models"
 MODEL_PATH = MODEL_DIR / "model.joblib"
 TRACKING_DB = ROOT / "mlflow.db"
@@ -52,14 +63,29 @@ def sha256_file(path):
 
 
 def build_pipeline(n_estimators, min_samples_leaf, max_features):
+    preprocessing_params = PARAMS["preprocessing"]
+    if preprocessing_params["scaling"] != "StandardScaler":
+        raise ValueError(
+            f"Unsupported numeric scaler: {preprocessing_params['scaling']}"
+        )
+    if preprocessing_params["encoding"] != "OneHotEncoder":
+        raise ValueError(
+            "Unsupported categorical encoder: "
+            f"{preprocessing_params['encoding']}"
+        )
     numeric_pipeline = Pipeline([
-        ("imputer", SimpleImputer(strategy="median")),
+        (
+            "imputer",
+            SimpleImputer(strategy=preprocessing_params["numeric_imputation"]),
+        ),
         ("scaler", StandardScaler()),
     ])
 
     categorical_pipeline = Pipeline([
-        ("imputer", SimpleImputer(strategy="most_frequent")),
-        ("onehot", OneHotEncoder(handle_unknown="ignore")),
+        ("imputer", SimpleImputer(strategy=preprocessing_params["categorical_imputation"])),
+        ("onehot", OneHotEncoder(
+            handle_unknown=preprocessing_params["handle_unknown"]
+        )),
     ])
 
     preprocessing = ColumnTransformer([
@@ -73,8 +99,8 @@ def build_pipeline(n_estimators, min_samples_leaf, max_features):
             n_estimators=n_estimators,
             min_samples_leaf=min_samples_leaf,
             max_features=max_features,
-            random_state=42,
-            n_jobs=-1,
+            random_state=PARAMS["model"]["random_state"],
+            n_jobs=PARAMS["model"]["n_jobs"],
         )),
     ])
 
@@ -95,30 +121,14 @@ def main():
     X_train, X_val, y_train, y_val = train_test_split(
         X,
         y,
-        test_size=0.2,
-        random_state=42,
+        test_size=PARAMS["validation"]["test_size"],
+        random_state=PARAMS["validation"]["random_state"],
     )
 
     mlflow.set_tracking_uri(f"sqlite:///{TRACKING_DB.as_posix()}")
     mlflow.set_experiment(EXPERIMENT_NAME)
 
-    configurations = [
-        {
-            "n_estimators": 200,
-            "min_samples_leaf": 1,
-            "max_features": 1.0,
-        },
-        {
-            "n_estimators": 300,
-            "min_samples_leaf": 1,
-            "max_features": 1.0,
-        },
-        {
-            "n_estimators": 400,
-            "min_samples_leaf": 2,
-            "max_features": 0.8,
-        },
-    ]
+    configurations = PARAMS["model"]["candidates"]
 
     results = []
 
@@ -130,10 +140,14 @@ def main():
         ) as run:
 
             mlflow.log_params(config)
-            mlflow.log_param("model", "RandomForestRegressor")
+            mlflow.log_param("model", PARAMS["model"]["name"])
             mlflow.log_param("cleaning", "mp089_audit_rules")
-            mlflow.log_param("validation_test_size", 0.2)
-            mlflow.log_param("validation_random_state", 42)
+            mlflow.log_param(
+                "validation_test_size", PARAMS["validation"]["test_size"]
+            )
+            mlflow.log_param(
+                "validation_random_state", PARAMS["validation"]["random_state"]
+            )
             mlflow.log_param("data_sha256", original_hash)
 
             model.fit(X_train, y_train)
