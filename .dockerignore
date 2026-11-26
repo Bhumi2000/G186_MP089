@@ -1,0 +1,15 @@
+.git
+.github
+.pytest_cache
+.venv
+__pycache__
+*.py[cod]
+*.db
+data
+logs
+predictions
+reports
+tests
+audit_full.txt
+audit_output.txt
+STUDENT_HANDBOOK.md
